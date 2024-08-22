@@ -19,6 +19,7 @@ export default (assets: loadedAssets) => {
 
     const animate = () => {
         Global.deltaTime = clock.getDelta();
+        Global.keyboardController.firstUpdate();
 
         Global.updates
             .concat(PhysicsObject.childrens.flatMap((v) => v.update))

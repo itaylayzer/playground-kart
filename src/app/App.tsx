@@ -150,6 +150,7 @@ const styles = useStyles({
 export default () => (
   <AssetLoader
     items={{
+      car: "fbx/kart.glb",
       // sfx_throw:"https://soxundbible.com/mp3/kung_fu_punch-Mike_Koenig-2097967259.mp3"
       sfx_throw: "sfx/throw.mp3",
       sfx_exp: "sfx/exp.mp3",

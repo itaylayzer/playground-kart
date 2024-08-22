@@ -1,6 +1,5 @@
 import * as CANNON from "cannon-es";
 import { Global } from "../store/Global";
-import { lerp } from "three/src/math/MathUtils.js";
 
 import {
   Emitter,
@@ -20,21 +19,12 @@ import {
   Texture,
 } from "three-nebula";
 import * as THREE from "three";
-const HORIZONTAL = 0;
-const VERTICAL = 1;
-const RAW_AXIS = 0;
-const LERPED_AXIS = 1;
 
 export class DriveController {
-  private keysAxis: [[number, number], [number, number]];
   private steeringAngle: number;
   private readonly maxSteeringAngle: number;
   private emitter: Emitter;
   constructor(private maxSpeed: number, private body: CANNON.Body) {
-    this.keysAxis = [
-      [0, 0],
-      [0, 0],
-    ];
     this.steeringAngle = 0;
     this.maxSteeringAngle = 30; // Limit steering angle (30 degrees)
 
@@ -97,36 +87,6 @@ export class DriveController {
 
   update() {
     Global.system.addEmitter(this.emitter);
-    const spacing = Global.keyboardController.isKeyPressed("Space");
-    // Input axis processing
-    this.keysAxis[RAW_AXIS][VERTICAL] = !Global.lockController.isLocked
-      ? 0
-      : spacing
-      ? 2
-      : +Global.keyboardController.isKeyPressed("KeyW") +
-        -Global.keyboardController.isKeyPressed("KeyS");
-    this.keysAxis[RAW_AXIS][HORIZONTAL] =
-      (0.7 * +!spacing + 0.3) *
-      (!Global.lockController.isLocked
-        ? 0
-        : -Global.keyboardController.isKeyPressed("KeyD") +
-          +Global.keyboardController.isKeyPressed("KeyA"));
-
-    // Smoothing inputs
-    for (let index = 0; index < 2; index++) {
-      this.keysAxis[LERPED_AXIS][index] = lerp(
-        this.keysAxis[LERPED_AXIS][index],
-        this.keysAxis[RAW_AXIS][index],
-        Global.deltaTime * 7
-      );
-    }
-
-    // Ignore small axis values (dead zone)
-    for (let index = 0; index < 2; index++) {
-      if (Math.abs(this.keysAxis[LERPED_AXIS][index]) < 0.05) {
-        this.keysAxis[LERPED_AXIS][index] = 0;
-      }
-    }
 
     // Determine forward direction
     const forward = new CANNON.Vec3(0, 0, 1);
@@ -134,7 +94,7 @@ export class DriveController {
 
     // Apply forward/reverse force
     const drivingForce = forward.scale(
-      this.keysAxis[LERPED_AXIS][VERTICAL] * this.maxSpeed * 2
+      Global.keyboardController.boostVertical * this.maxSpeed * 2
     );
 
     // Calculate and apply friction (simplified)
@@ -147,10 +107,9 @@ export class DriveController {
 
     // Steering mechanics
     this.steeringAngle =
-      this.keysAxis[LERPED_AXIS][HORIZONTAL] *
+      Global.keyboardController.boostHorizontal *
       this.maxSteeringAngle *
-      this.keysAxis[LERPED_AXIS][VERTICAL];
-
+      Global.keyboardController.boostVertical;
     // Calculate the steering direction using quaternion
     const steeringQuaternion = new CANNON.Quaternion();
     steeringQuaternion.setFromAxisAngle(
