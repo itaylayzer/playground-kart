@@ -32,18 +32,19 @@ export class CameraController {
       body.quaternion.vmult(new CANNON.Vec3(0, 0, 1))
     );
     const rightVec = body.quaternion.vmult(new CANNON.Vec3(1, 0, 0));
+    const upVec = body.quaternion.vmult(new CANNON.Vec3(0, 1, 0));
 
     rightVec.clone().scale(1 * Global.keyboardController.horizontal, rightVec);
-    const lookVec = new CANNON.Vec3().copy(rightVec.clone().scale(0.5));
+    const lookVec = new CANNON.Vec3().copy(rightVec.clone().scale(0.5 / 3));
 
     this.camera.position
       .copy(vec)
-      .add(forwardVec.clone().multiplyScalar(-1))
-      .add(rightVec.scale(0.5))
-      .add(new THREE.Vector3(0, 1, 0));
+      .add(forwardVec.clone().multiplyScalar(-1 / 2))
+      .add(rightVec.scale(0.5 / 2))
+      .add(new THREE.Vector3().copy(upVec.scale(1 / 2)));
 
     lookVec.vadd(body.position, lookVec);
-    lookVec.vadd(new CANNON.Vec3(0, 0.5, 0), lookVec);
+    lookVec.vadd(new CANNON.Vec3(0, 0.6 / 3, 0), lookVec);
 
     this.camera.lookAt(new THREE.Vector3().copy(lookVec));
     this.camera.rotateZ(Global.keyboardController.horizontal * 0.05);

@@ -7,7 +7,7 @@ export class PlayerModel {
   public update: () => void;
   constructor(body: CANNON.Body) {
     const model = Global.assets.gltf.car.scene;
-    model.scale.multiplyScalar(0.5);
+    model.scale.multiplyScalar(0.5 / 3);
 
     const backweels = model.getObjectByName("Back_Wheels_38")!;
     const frontweels = model.getObjectByName("Front_Wheels_47")!;
@@ -23,7 +23,7 @@ export class PlayerModel {
       const velocity = body.velocity.dot(forward) * DEG2RAD;
 
       backweels.rotateX(velocity);
-      frontweels.rotation.y = Global.keyboardController.horizontal * 0.4;
+      frontweels.rotation.y = Global.keyboardController.boostHorizontal * 0.4;
 
       for (const [id, cf] of frontweels.children.entries()) {
         id < 2 ? cf.rotateY(velocity) : cf.rotateX(velocity);
@@ -32,7 +32,7 @@ export class PlayerModel {
       steeringweel.rotation.set(0, 0, 0);
       steeringweel.rotateOnAxis(
         new THREE.Vector3(0, -0.425, 1),
-        (-Global.keyboardController.horizontal * Math.PI * 2) / 3
+        (-Global.keyboardController.boostHorizontal * Math.PI * 2) / 3
       );
     };
 

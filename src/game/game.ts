@@ -6,44 +6,44 @@ import * as THREE from "three";
 import System, { SpriteRenderer } from "three-nebula";
 
 export default (assets: loadedAssets) => {
-    Global.assets = assets;
+  Global.assets = assets;
 
-    setupWorld();
+  setupWorld();
 
-    const renderer = new SpriteRenderer(Global.scene, THREE);
-    Global.system = new System();
-    Global.system.addRenderer(renderer);
+  const renderer = new SpriteRenderer(Global.scene, THREE);
+  Global.system = new System();
+  Global.system.addRenderer(renderer);
 
-    const clock = new THREE.Clock();
-    Global.lockController.lock();
+  const clock = new THREE.Clock();
+  Global.lockController.lock();
 
-    const animate = () => {
-        Global.deltaTime = clock.getDelta();
-        Global.keyboardController.firstUpdate();
+  const animate = () => {
+    Global.deltaTime = clock.getDelta();
+    Global.keyboardController.firstUpdate();
 
-        Global.updates
-            .concat(PhysicsObject.childrens.flatMap((v) => v.update))
-            .map((fn) => fn());
+    Global.updates
+      .concat(PhysicsObject.childrens.flatMap((v) => v.update))
+      .map((fn) => fn());
 
-        Global.system.update();
-        Global.renderer.render(Global.scene, Global.camera);
-        Global.world.step(2.6 * Global.deltaTime);
+    Global.system.update();
+    Global.renderer.render(Global.scene, Global.camera);
+    Global.world.step(2.6 * Global.deltaTime);
 
-        // Global.cannonDebugger.update();
+    // Global.cannonDebugger.update();
 
-        Global.mouseController.lastUpdate();
-        Global.keyboardController.lastUpdate();
+    Global.mouseController.lastUpdate();
+    Global.keyboardController.lastUpdate();
 
-        Global.stats.update();
-    };
+    Global.stats.update();
+  };
 
-    setInterval(() => {
-        animate();
-    }, 1000 / 120);
+  setInterval(() => {
+    animate();
+  }, 1000 / 120);
 
-    return {
-        destroyer: () => {
-            // while (Global.container.firstChild) Global.container.removeChild(Global.container.firstChild);
-        }
-    };
+  return {
+    destroyer: () => {
+      // while (Global.container.firstChild) Global.container.removeChild(Global.container.firstChild);
+    },
+  };
 };

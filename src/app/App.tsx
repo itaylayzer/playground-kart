@@ -1,4 +1,3 @@
-import { GoDotFill } from "react-icons/go";
 import AssetLoader from "../components/AssetLoader";
 import { useStyles } from "../hooks/useStyles";
 import { useApScreens } from "../viewmodels";
@@ -8,11 +7,7 @@ function App() {
 
   return (
     <>
-      <div style={styles.gameContainer} className="gameContainer">
-        <div style={styles.dot}>
-          <GoDotFill color="white" size={10} />
-        </div>
-      </div>
+      <div style={styles.gameContainer} className="gameContainer"></div>
       <p style={styles.header}>
         kart | kart -{" "}
         <a style={styles.href} href="http://itaylayzer.github.io/">

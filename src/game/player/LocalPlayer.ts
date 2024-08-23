@@ -8,15 +8,16 @@ export class LocalPlayer extends Player {
   private static instance: LocalPlayer;
   public forceMovement: boolean;
   setCameraAddon: any;
-  cameraAddon: THREE.Vector3;
   static getInstance() {
     return this.instance;
   }
   constructor() {
     const group = new THREE.Group();
     super(group);
+
+    this.position.set(29, 0, 40);
+    group.position.set(29, 0, 40);
     this.forceMovement = false;
-    this.cameraAddon = new THREE.Vector3();
     LocalPlayer.instance = this;
 
     const movementController = new DriveController(10, this);
@@ -24,7 +25,7 @@ export class LocalPlayer extends Player {
     const model = new PlayerModel(this);
 
     const update = () => {
-       movementController.update();
+      movementController.update();
 
       Global.cameraController.update(this);
 

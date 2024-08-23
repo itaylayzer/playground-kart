@@ -1,4 +1,4 @@
-import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { Mesh, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { KeyboardController } from "../controller/KeyboardController";
 import { MouseController } from "../controller/MouseController";
 import { World } from "cannon-es";
@@ -31,4 +31,5 @@ export class Global {
     public static localPlayer: LocalPlayer;
     public static audioManager: AudioManager<"throw" | "exp" | "shoot">;
     public static system: System;
+    public static roadMesh:Mesh;
 }
