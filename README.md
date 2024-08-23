@@ -2,7 +2,7 @@
 
 a kart playeground created with three.js and cannon-es \
 
-the reason i created this playground is beacuse i found out that creating a kart controller was difficult (couldnt find one that worked like i wanted), so i created myself. in the style of Mario Kart games.
+the reason i created this playground is beacuse i found out that creating a kart controller was difficult (couldnt find one that worked like i wanted), so i created myself.
 
 also had some use with three-nebula and mutch more. \
 this playground isnt perfect, it misses alot of things, but it sure is the basic of karting game.
