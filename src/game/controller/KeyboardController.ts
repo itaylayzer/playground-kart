@@ -3,8 +3,6 @@ import { Global } from "../store/Global";
 
 const HORIZONTAL = 0;
 const VERTICAL = 1;
-const BOOST_VERTICAL = 2;
-const BOOST_HORIZONTAL = 3;
 const RAW_AXIS = 0;
 const LERPED_AXIS = 1;
 
@@ -12,18 +10,15 @@ export class KeyboardController {
   private keysPressed: Set<string>;
   private keysDown: Set<string>;
   private keysUp: Set<string>;
-  private keysAxis: [
-    [number, number, number, number],
-    [number, number, number, number]
-  ];
+  private keysAxis: [[number, number], [number, number]];
 
   constructor(enableOnStart: boolean = true) {
     this.keysPressed = new Set();
     this.keysDown = new Set();
     this.keysUp = new Set();
     this.keysAxis = [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
+      [0, 0],
+      [0, 0],
     ];
     enableOnStart && this.enable();
   }
@@ -67,22 +62,8 @@ export class KeyboardController {
       ? 0
       : -this.isKeyPressed("KeyD") + +this.isKeyPressed("KeyA");
 
-    this.keysAxis[RAW_AXIS][BOOST_VERTICAL] = !Global.lockController.isLocked
-      ? 0
-      : Global.keyboardController.isKeyPressed("Space")
-      ? 2
-      : +Global.keyboardController.isKeyPressed("KeyW") +
-        -Global.keyboardController.isKeyPressed("KeyS");
-
-    this.keysAxis[RAW_AXIS][BOOST_HORIZONTAL] =
-      (0.7 * +!Global.keyboardController.isKeyPressed("Space") + 0.3) *
-      (!Global.lockController.isLocked
-        ? 0
-        : -Global.keyboardController.isKeyPressed("KeyD") +
-          +Global.keyboardController.isKeyPressed("KeyA"));
-
     // Smoothing inputs
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 2; index++) {
       this.keysAxis[LERPED_AXIS][index] = lerp(
         this.keysAxis[LERPED_AXIS][index],
         this.keysAxis[RAW_AXIS][index],
@@ -91,7 +72,7 @@ export class KeyboardController {
     }
 
     // Ignore small axis values (dead zone)
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 2; index++) {
       if (Math.abs(this.keysAxis[LERPED_AXIS][index]) < 0.05) {
         this.keysAxis[LERPED_AXIS][index] = 0;
       }
@@ -112,22 +93,11 @@ export class KeyboardController {
   public get horizontal() {
     return this.keysAxis[LERPED_AXIS][HORIZONTAL];
   }
-  public get boostVertical() {
-    return this.keysAxis[LERPED_AXIS][BOOST_VERTICAL];
-  }
-  public get boostHorizontal() {
-    return this.keysAxis[LERPED_AXIS][BOOST_HORIZONTAL];
-  }
+
   public get verticalRaw() {
     return this.keysAxis[RAW_AXIS][VERTICAL];
   }
   public get horizontalRaw() {
     return this.keysAxis[RAW_AXIS][HORIZONTAL];
-  }
-  public get boostHorizontalRaw() {
-    return this.keysAxis[RAW_AXIS][BOOST_HORIZONTAL];
-  }
-  public get boostVerticalRaw() {
-    return this.keysAxis[RAW_AXIS][BOOST_VERTICAL];
   }
 }

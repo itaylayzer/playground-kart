@@ -2,17 +2,21 @@ import * as CANNON from "cannon-es";
 import { Global } from "../store/Global";
 
 import * as THREE from "three";
+import { damp } from "three/src/math/MathUtils.js";
 
+const maxDistance = 1;
 export class DriveController {
   private steeringAngle: number;
   private readonly maxSteeringAngle: number;
   private raycaster: THREE.Raycaster;
-  private lastPosition: CANNON.Vec3;
-  constructor(private maxSpeed: number, private body: CANNON.Body) {
+  private last: CANNON.Vec3;
+  private driftSide: [number, number];
+  constructor(public maxSpeed: number, private body: CANNON.Body) {
     this.steeringAngle = 0;
     this.maxSteeringAngle = 30; // Limit steering angle (30 degrees)
-    this.lastPosition = this.body.position.clone();
     this.raycaster = new THREE.Raycaster();
+    this.last = new CANNON.Vec3();
+    this.driftSide = [0, 0];
   }
 
   putToGround() {
@@ -24,17 +28,21 @@ export class DriveController {
     );
     const intercetions = this.raycaster.intersectObject(Global.roadMesh);
 
-    if (intercetions.length === 0) return;
+    const closestIntersection =
+      intercetions.length === 0
+        ? undefined
+        : intercetions.length === 1
+        ? intercetions[0]
+        : intercetions.reduce((a, b) => (a.distance > b.distance ? b : a));
 
-    const closestIntersection = intercetions.reduce((a, b) =>
-      a.distance > b.distance ? b : a
-    );
-
-    if (closestIntersection.distance > 1) {
-      this.body.position.copy(this.lastPosition);
+    if (
+      closestIntersection === undefined ||
+      closestIntersection.distance > maxDistance
+    ) {
+      this.body.position.copy(this.last);
       return;
     }
-    this.lastPosition.copy(this.body.position);
+    this.last.copy(this.body.position);
 
     // const up = closestIntersection.normal;
 
@@ -62,15 +70,85 @@ export class DriveController {
     this.body.quaternion = alignUpQuat.mult(this.body.quaternion);
   }
 
+  calculateRoadDistances() {
+    const pos = new THREE.Vector3().copy(this.body.position);
+    const rightVec = new THREE.Vector3(1, 0, 0).applyQuaternion(
+      this.body.quaternion
+    );
+    const downVec = new THREE.Vector3(0, -1, 0).applyQuaternion(
+      this.body.quaternion
+    );
+    const upVec = new THREE.Vector3(0, 1, 0).applyQuaternion(
+      this.body.quaternion
+    );
+    const treshold = 0.1;
+
+    const getPos = (middle: number) =>
+      pos
+        .clone()
+        .add(
+          rightVec
+            .clone()
+            .multiplyScalar(middle)
+            .add(upVec.clone().multiplyScalar(0.25))
+        );
+
+    const compare = (middle: number) => {
+      this.raycaster.set(getPos(middle), downVec);
+
+      const intersects = this.raycaster.intersectObject(Global.roadMesh);
+
+      return (
+        intersects.length > 0 &&
+        intersects.reduce((a, b) => (a.distance > b.distance ? b : a))
+          .distance <= maxDistance
+      );
+    };
+
+    const findDistancePos = (left: number, right: number) => {
+      const rightOrigin = right === 0;
+      let middle = (right + left) / 2;
+      while (Math.abs(right - left) > treshold) {
+        middle = (right + left) / 2;
+        if (compare(middle)) {
+          rightOrigin ? (right = middle) : (left = middle);
+        } else {
+          rightOrigin ? (left = middle) : (right = middle);
+        }
+      }
+
+      return middle;
+    };
+
+    const positions = [findDistancePos(-25, 0), findDistancePos(0, 25)];
+
+    return positions;
+  }
+
   update() {
+    if (Global.keyboardController.isKeyDown("Space")) {
+      this.driftSide[0] = Global.keyboardController.horizontalRaw * 0.6;
+    }
+    if (Global.keyboardController.isKeyUp("Space")) {
+      this.driftSide[0] = 0;
+    }
+
+    this.driftSide[1] = damp(
+      this.driftSide[1],
+      this.driftSide[0],
+      1.5,
+      Global.deltaTime * 7
+    );
+
     this.putToGround();
+
     // Determine forward direction
     const forward = new CANNON.Vec3(0, 0, 1);
     this.body.quaternion.vmult(forward, forward);
 
     // Apply forward/reverse force
     const drivingForce = forward.scale(
-      Global.keyboardController.boostVertical * this.maxSpeed * 2
+      Global.keyboardController.vertical * this.maxSpeed * 2
     );
 
     // Calculate and apply friction (simplified)
@@ -83,9 +161,9 @@ export class DriveController {
 
     // Steering mechanics
     this.steeringAngle =
-      Global.keyboardController.boostHorizontal *
+      (Global.keyboardController.horizontal + this.driftSide[1]) *
       this.maxSteeringAngle *
-      Global.keyboardController.boostVertical;
+      Global.keyboardController.vertical;
     // Calculate the steering direction using quaternion
     const steeringQuaternion = new CANNON.Quaternion();
     steeringQuaternion.setFromAxisAngle(

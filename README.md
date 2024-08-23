@@ -11,6 +11,10 @@ this playground isnt perfect, it misses alot of things, but it sure is the basic
 
 @Gyro - Kart \
 https://sketchfab.com/3d-models/kart-cf740a3e6ba2430497c2b0e15f93c5eb#download
+
+textures
+txt_road = https://hofk.de/main/discourse.threejs/2021/CarRacing/CentralMarking.png
+
 sounds
 exp = https://pixabay.com/sound-effects/medium-explosion-40472/
 throw = https://soxundbible.com/mp3/kung_fu_punch-Mike_Koenig-2097967259.mp3

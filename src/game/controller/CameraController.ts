@@ -39,7 +39,11 @@ export class CameraController {
 
     this.camera.position
       .copy(vec)
-      .add(forwardVec.clone().multiplyScalar(-1 / 2))
+      .add(
+        forwardVec
+          .clone()
+          .multiplyScalar(-1 / 2 + -Global.keyboardController.vertical / 5)
+      )
       .add(rightVec.scale(0.5 / 2))
       .add(new THREE.Vector3().copy(upVec.scale(1 / 2)));
 

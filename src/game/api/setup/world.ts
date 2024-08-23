@@ -1,6 +1,5 @@
 // import { BoxObject } from "../meshes/BoxObject";
 import { Global } from "../../store/Global";
-import { Platform } from "../meshes/Platform";
 // import { createLight } from "../../api/createLights";
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
@@ -96,6 +95,7 @@ function setupScene() {
   Global.container.appendChild(Global.renderer.domElement);
   Global.scene = new THREE.Scene();
   Global.scene.background = new THREE.Color(colors.background);
+  Global.scene.fog = new THREE.Fog(Global.scene.background, 10, 30);
 }
 
 function setupPhysicsWorld() {
@@ -154,10 +154,14 @@ function setupDat() {
 
   const obj = {
     "master volume": 0.5,
+    "max speed": 10,
   };
 
   gui.add(obj, "master volume", 0, 1, 0.01).onFinishChange(() => {
     Global.audioManager.setMasterVolume(obj["master volume"]);
+  });
+  gui.add(obj, "max speed", 0, 20, 2.5).onFinishChange(() => {
+    LocalPlayer.getInstance().setMaxSpeed(obj["max speed"]);
   });
 }
 
@@ -170,7 +174,7 @@ function setupRoad() {
     -2, -14, 0, 3, -11, 0, 10, -6, 0, 10,
   ].map((v) => v * 10);
 
-  const [dotsM, m] = createRoad(curvePoints, 25, 1);
+  const [dotsM, m] = createRoad(curvePoints, 15, 0);
 
   // Global.world.addBody(
   //   new CANNON.Body({

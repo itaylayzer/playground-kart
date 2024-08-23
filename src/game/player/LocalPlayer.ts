@@ -7,6 +7,7 @@ import { PlayerModel } from "./PlayerModel";
 export class LocalPlayer extends Player {
   private static instance: LocalPlayer;
   public forceMovement: boolean;
+  private driveController: DriveController;
   setCameraAddon: any;
   static getInstance() {
     return this.instance;
@@ -20,12 +21,12 @@ export class LocalPlayer extends Player {
     this.forceMovement = false;
     LocalPlayer.instance = this;
 
-    const movementController = new DriveController(10, this);
+    this.driveController = new DriveController(10, this);
 
     const model = new PlayerModel(this);
 
     const update = () => {
-      movementController.update();
+      this.driveController.update();
 
       Global.cameraController.update(this);
 
@@ -35,5 +36,8 @@ export class LocalPlayer extends Player {
     this.update.push(update);
 
     Global.world.addBody(this);
+  }
+  public setMaxSpeed(speed: number) {
+    this.driveController.maxSpeed = speed;
   }
 }

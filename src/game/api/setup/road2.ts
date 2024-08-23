@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { buildPoints } from "./road";
+import { Global } from "../../store/Global";
 
 /**
  * @author https://hofk.de/main/discourse.threejs/2021/CarRacing/CarRacing.html
@@ -123,9 +124,7 @@ export function createRoad(
     }
   }
 
-  const tex = new THREE.TextureLoader().load(
-    "https://hofk.de/main/discourse.threejs/2021/CarRacing/CentralMarking.png"
-  );
+  const tex = Global.assets.textures.txt_road;
   tex.wrapS = THREE.RepeatWrapping;
   tex.repeat.set(ls * 2, 1);
 

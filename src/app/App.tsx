@@ -8,16 +8,16 @@ function App() {
   return (
     <>
       <div style={styles.gameContainer} className="gameContainer"></div>
-      <p style={styles.header}>
+      {/* <p style={styles.header}>
         kart | kart -{" "}
         <a style={styles.href} href="http://itaylayzer.github.io/">
           itay layzer
         </a>
         <br />
-        move with A,S,D,W. boost with Space
+        move with A,S,D,W. drift with Space
         <br />
-        drift with LeftShift. unlock with Escape
-      </p>
+        unlock with Escape
+      </p> */}
 
       <p id="velocity" style={styles.velocity}>
         0.00 KM/S
@@ -151,6 +151,7 @@ export default () => (
       sfx_exp: "sfx/exp.mp3",
       sfx_shoot: "sfx/shoot.mp3",
       txt_circle: "textures/circle.png",
+      txt_road: "textures/CentralMarking.png",
     }}
   >
     <App />
