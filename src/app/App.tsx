@@ -8,8 +8,8 @@ function App() {
   return (
     <>
       <div style={styles.gameContainer} className="gameContainer"></div>
-      {/* <p style={styles.header}>
-        kart | kart -{" "}
+      <p style={styles.header}>
+        playground | kart -{" "}
         <a style={styles.href} href="http://itaylayzer.github.io/">
           itay layzer
         </a>
@@ -17,7 +17,7 @@ function App() {
         move with A,S,D,W. drift with Space
         <br />
         unlock with Escape
-      </p> */}
+      </p>
 
       <p id="velocity" style={styles.velocity}>
         0.00 KM/S

@@ -12,7 +12,6 @@ import Stats from "three/examples/jsm/libs/stats.module.js";
 // import CannonUtils from "cannon-utils";
 // import { HighlightedArea } from "../meshes/HighiltedArea";
 import { PointerLockControls } from "three/examples/jsm/Addons.js";
-import { AudioManager } from "../../managers/AudioManager";
 import { LocalPlayer } from "../../player/LocalPlayer";
 import Dat from "dat.gui";
 import init from "three-dat.gui";
@@ -123,14 +122,6 @@ function setupControllers() {
   );
 }
 
-function setupManagers() {
-  Global.audioManager = new AudioManager({
-    throw: Global.assets.sfx.sfx_throw,
-    exp: Global.assets.sfx.sfx_exp,
-    shoot: Global.assets.sfx.sfx_shoot,
-  });
-}
-
 function setupWindowEvents() {
   Global.container.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -157,9 +148,6 @@ function setupDat() {
     "max speed": 10,
   };
 
-  gui.add(obj, "master volume", 0, 1, 0.01).onFinishChange(() => {
-    Global.audioManager.setMasterVolume(obj["master volume"]);
-  });
   gui.add(obj, "max speed", 0, 20, 2.5).onFinishChange(() => {
     LocalPlayer.getInstance().setMaxSpeed(obj["max speed"]);
   });
@@ -195,7 +183,6 @@ export default function () {
   setupLights();
   setupObjects();
   setupControllers();
-  setupManagers();
   setupWindowEvents();
   setupStats();
   setupRoad();
