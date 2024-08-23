@@ -1,4 +1,4 @@
-# Playground FPS
+# Playground Kart
 
 a kart playeground created with three.js and cannon-es \
 
